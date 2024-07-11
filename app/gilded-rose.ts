@@ -67,51 +67,40 @@ export class GildedRose {
 
       const item = this.items[i];
 
-      // update quality every day
-      // for normal items
+      // update sell by date every day for all items except Sulfuras
+      if (!this.isSulfuras(item)) {
+        this.updateSellIn(item)
+      }
+
+      // update quality for normal items
       if (this.isNormalItem(item)) {
         this.updateQuality(item, -1)
+        if (item.sellIn < 0) {
+          this.updateQuality(item, -1)
+        }
       } 
 
-      // for Brie
+      // update quality for Brie
       if (this.isBrie(item)) {
         this.updateQuality(item, +1)
+        if (item.sellIn < 0) {
+          this.updateQuality(item, +1)
+        }
       }
       
-      // for Backstage Passes
+      // update quality for Backstage Passes
       if (this.isBackstagePass(item)) {
+        if (item.sellIn < 0) {
+          this.updateQuality(item, (-1 * item.quality))
+        }
         if (item.sellIn > 10) {
           this.updateQuality(item, +1)
         }
         if (item.sellIn > 5 && item.sellIn < 11) {
           this.updateQuality(item, +2)
         }
-        if (item.sellIn < 6) {
+        if (item.sellIn >= 0 && item.sellIn < 6) {
           this.updateQuality(item, +3)
-        }
-      } 
-
-      // update sell by date every day for all items except Sulfuras
-      if (!this.isSulfuras(item)) {
-        this.updateSellIn(item)
-      }
-
-      // update quality again if past sell by date
-      if (item.sellIn < 0) {
-
-        // for normal items
-        if (this.isNormalItem(item)) {
-          this.updateQuality(item, -1)
-        }
-
-        // for Brie
-        if (this.isBrie(item)) {
-          this.updateQuality(item, +1)
-        }
-
-        // for Backstage Passes
-        if (this.isBackstagePass(item)) {
-          this.updateQuality(item, (-1 * item.quality))
         }
       } 
     }
