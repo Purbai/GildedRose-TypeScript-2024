@@ -18,16 +18,44 @@ export class GildedRose {
   }
 
   isNormalItem(item) {
-    return (item.name != 'Aged Brie' 
+    return (
+      item.name != 'Aged Brie' 
       && item.name != 'Backstage passes to a TAFKAL80ETC concert' 
       && item.name != 'Sulfuras, Hand of Ragnaros' 
-      && item.quality > 0
+      && item.quality >= 0
+      && item.quality <= 50
+    )
+  }
+
+  isBrie(item) {
+    return (
+      item.name == 'Aged Brie'
+      && item.quality >= 0
       && item.quality < 50
     )
   }
 
+  isBackstagePass(item) {
+    return (
+      item.name == 'Backstage passes to a TAFKAL80ETC concert'
+      && item.quality >= 0
+      && item.quality < 50
+    )
+  }
+
+  isSulfuras(item) {
+    return (
+      item.name == 'Sulfuras, Hand of Ragnaros'
+      && item.quality == 80
+    )
+  }
+
   updateQuality(item, amount) {
-    item.quality += amount;
+    if (item.quality + amount <= 50) {
+      item.quality += amount;
+    } else {
+      item.quality = 50;
+    }
   }
 
   updateSellIn(item) {
@@ -37,50 +65,56 @@ export class GildedRose {
   updateItem() {
     for (let i = 0; i < this.items.length; i++) {
 
-      // console.log('before first if condition',this.items[i].name,this.items[i].sellIn,this.items[i].quality)
-      if (this.isNormalItem(this.items[i])) {
-        // is normal
-        this.updateQuality(this.items[i], -1)
-        // is Brie or Backstage > 10
-      } 
-      else if (this.items[i].quality < 50 ) {
-        this.updateQuality(this.items[i], +1)
-        // is Backstage < 11
-        if (this.items[i].name == 'Backstage passes to a TAFKAL80ETC concert') {
-          if (this.items[i].sellIn < 11 && this.items[i].quality < 50) {
-            this.updateQuality(this.items[i], +1)
-          }
-          if (this.items[i].sellIn < 6 && this.items[i].quality < 50) {
-            this.updateQuality(this.items[i], +1)
-          }
-        }
-      } // end of if
+      const item = this.items[i];
 
-      //console.log('after first if condition',this.items[i].name,this.items[i].sellIn,this.items[i].quality)
-      // is normal
-      if (this.items[i].name != 'Sulfuras, Hand of Ragnaros') {
-        this.updateSellIn(this.items[i])
+      // update quality every day
+      // for normal items
+      if (this.isNormalItem(item)) {
+        this.updateQuality(item, -1)
+      } 
+
+      // for Brie
+      if (this.isBrie(item)) {
+        this.updateQuality(item, +1)
+      }
+      
+      // for Backstage Passes
+      if (this.isBackstagePass(item)) {
+        if (item.sellIn > 10) {
+          this.updateQuality(item, +1)
+        }
+        if (item.sellIn > 5 && item.sellIn < 11) {
+          this.updateQuality(item, +2)
+        }
+        if (item.sellIn < 6) {
+          this.updateQuality(item, +3)
+        }
+      } 
+
+      // update sell by date every day for all items except Sulfuras
+      if (!this.isSulfuras(item)) {
+        this.updateSellIn(item)
       }
 
-      //console.log('before sell-by if condition',this.items[i].name,this.items[i].sellIn,this.items[i].quality)
-      // is past sell-by date
-      if (this.items[i].sellIn < 0) {
-        if (this.isNormalItem(this.items[i])) {
-          // is normal
-          this.updateQuality(this.items[i], -1)
+      // update quality again if past sell by date
+      if (item.sellIn < 0) {
 
-        // is Backstage
-        } else if (this.items[i].name == 'Backstage passes to a TAFKAL80ETC concert') {
-          this.updateQuality(this.items[i], (-1 * this.items[i].quality))
-          }
-          // is Brie
-        else if (this.items[i].name == 'Aged Brie' && this.items[i].quality < 50) {
-          // console.log(this.items[i].name,this.items[i].quality,this.items[i].sellIn)
-          this.updateQuality(this.items[i], +1)
+        // for normal items
+        if (this.isNormalItem(item)) {
+          this.updateQuality(item, -1)
         }
-      } // end of the past sell-by date if condition
-      //console.log('after sell-by if condition',this.items[i].name,this.items[i].sellIn,this.items[i].quality)
-    } // end of loop 
+
+        // for Brie
+        if (this.isBrie(item)) {
+          this.updateQuality(item, +1)
+        }
+
+        // for Backstage Passes
+        if (this.isBackstagePass(item)) {
+          this.updateQuality(item, (-1 * item.quality))
+        }
+      } 
+    }
   
     return this.items;
   }
