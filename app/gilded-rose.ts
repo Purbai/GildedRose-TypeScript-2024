@@ -17,24 +17,41 @@ export class GildedRose {
     this.items = items;
   }
 
-  updateQuality() {
+  isNormalItem(item) {
+    return (item.name != 'Aged Brie' 
+      && item.name != 'Backstage passes to a TAFKAL80ETC concert' 
+      && item.name != 'Sulfuras, Hand of Ragnaros' 
+      && item.quality > 0
+      && item.quality < 50
+    )
+  }
+
+  updateQuality(item, amount) {
+    item.quality += amount;
+  }
+
+  updateSellIn(item) {
+    item.sellIn -= 1
+  }
+
+  updateItem() {
     for (let i = 0; i < this.items.length; i++) {
 
       // console.log('before first if condition',this.items[i].name,this.items[i].sellIn,this.items[i].quality)
-      if (this.items[i].name != 'Aged Brie' && this.items[i].name != 'Backstage passes to a TAFKAL80ETC concert' && this.items[i].quality > 0 && this.items[i].name != 'Sulfuras, Hand of Ragnaros') {
+      if (this.isNormalItem(this.items[i])) {
         // is normal
-        this.items[i].quality = this.items[i].quality - 1
+        this.updateQuality(this.items[i], -1)
         // is Brie or Backstage > 10
       } 
       else if (this.items[i].quality < 50 ) {
-        this.items[i].quality = this.items[i].quality + 1
+        this.updateQuality(this.items[i], +1)
         // is Backstage < 11
         if (this.items[i].name == 'Backstage passes to a TAFKAL80ETC concert') {
           if (this.items[i].sellIn < 11 && this.items[i].quality < 50) {
-            this.items[i].quality = this.items[i].quality + 1
+            this.updateQuality(this.items[i], +1)
           }
           if (this.items[i].sellIn < 6 && this.items[i].quality < 50) {
-            this.items[i].quality = this.items[i].quality + 1
+            this.updateQuality(this.items[i], +1)
           }
         }
       } // end of if
@@ -42,24 +59,24 @@ export class GildedRose {
       //console.log('after first if condition',this.items[i].name,this.items[i].sellIn,this.items[i].quality)
       // is normal
       if (this.items[i].name != 'Sulfuras, Hand of Ragnaros') {
-        this.items[i].sellIn = this.items[i].sellIn - 1;
+        this.updateSellIn(this.items[i])
       }
 
       //console.log('before sell-by if condition',this.items[i].name,this.items[i].sellIn,this.items[i].quality)
       // is past sell-by date
       if (this.items[i].sellIn < 0) {
-        if (this.items[i].name != 'Aged Brie' && this.items[i].name != 'Backstage passes to a TAFKAL80ETC concert' && this.items[i].quality > 0 && this.items[i].name != 'Sulfuras, Hand of Ragnaros') {
+        if (this.isNormalItem(this.items[i])) {
           // is normal
-          this.items[i].quality = this.items[i].quality - 1
+          this.updateQuality(this.items[i], -1)
 
         // is Backstage
         } else if (this.items[i].name == 'Backstage passes to a TAFKAL80ETC concert') {
-          this.items[i].quality = this.items[i].quality - this.items[i].quality
+          this.updateQuality(this.items[i], (-1 * this.items[i].quality))
           }
           // is Brie
         else if (this.items[i].name == 'Aged Brie' && this.items[i].quality < 50) {
-          console.log(this.items[i].name,this.items[i].quality,this.items[i].sellIn)
-          this.items[i].quality = this.items[i].quality + 1
+          // console.log(this.items[i].name,this.items[i].quality,this.items[i].sellIn)
+          this.updateQuality(this.items[i], +1)
         }
       } // end of the past sell-by date if condition
       //console.log('after sell-by if condition',this.items[i].name,this.items[i].sellIn,this.items[i].quality)
