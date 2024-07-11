@@ -1,6 +1,6 @@
 import { Item, GildedRose } from '@/gilded-rose';
 
-describe.only('Gilded Rose', () => {
+describe('Gilded Rose', () => {
   it('should foo', () => {
     const gildedRose = new GildedRose([new Item('foo', 0, 0)]);
     const items = gildedRose.updateQuality();
@@ -13,7 +13,7 @@ describe.only('Gilded Rose', () => {
     expect(items[0].quality).toBe(19);
   });
 
-  it('should decrease quality by 1 for Brie if quality is < 50', () => {
+  it('should increase quality by 1 for Brie if quality is < 50', () => {
     const gildedRose = new GildedRose([new Item("Aged Brie", 2, 0)]);
     const items = gildedRose.updateQuality();
     expect(items[0].quality).toBe(1);
@@ -78,7 +78,6 @@ describe.only('Gilded Rose', () => {
     const items = gildedRose.updateQuality();
     expect(items[0].quality).toBe(22);
   })
-
   
   it('should reduce quality to zero  if selling days < 0 for Backstage', () => {
     const gildedRose = new GildedRose([new Item("Backstage passes to a TAFKAL80ETC concert", -1, 20)]);
