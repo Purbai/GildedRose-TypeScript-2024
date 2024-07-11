@@ -67,4 +67,9 @@ describe.only('Gilded Rose', () => {
     expect(items[0].sellIn).toBe(0);
   });
 
+  it('should decrease quality by 2 for normal items once sellIn is < 0', () => {
+    const gildedRose = new GildedRose([new Item("+5 Dexterity Vest", -1, 20)]);
+    const items = gildedRose.updateQuality();
+    expect(items[0].quality).toBe(18);
+  });
 });
