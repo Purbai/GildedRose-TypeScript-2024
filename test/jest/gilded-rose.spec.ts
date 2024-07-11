@@ -72,4 +72,18 @@ describe.only('Gilded Rose', () => {
     const items = gildedRose.updateQuality();
     expect(items[0].quality).toBe(18);
   });
+
+  it('should increase quality by 2 if selling days < 0 & quality < 50 for Brie', () => {
+    const gildedRose = new GildedRose([new Item("Aged Brie", -1, 20)]);
+    const items = gildedRose.updateQuality();
+    expect(items[0].quality).toBe(22);
+  })
+
+  
+  it('should reduce quality to zero  if selling days < 0 for Backstage', () => {
+    const gildedRose = new GildedRose([new Item("Backstage passes to a TAFKAL80ETC concert", -1, 20)]);
+    const items = gildedRose.updateQuality();
+    expect(items[0].quality).toBe(0);
+  })
+
 });
