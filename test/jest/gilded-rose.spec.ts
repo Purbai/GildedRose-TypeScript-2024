@@ -54,4 +54,17 @@ describe.only('Gilded Rose', () => {
     const items = gildedRose.updateQuality();
     expect(items[0].quality).toBe(50);
   });
+
+  it('decrease the selln days by 1 if not Sulfuras', () => {
+    const gildedRose = new GildedRose([new Item("Backstage passes to a TAFKAL80ETC concert", 5, 49)]);
+    const items = gildedRose.updateQuality();
+    expect(items[0].sellIn).toBe(4);
+  });
+
+  it('should not change the selln days if Sulfuras', () => {
+    const gildedRose = new GildedRose([new Item("Sulfuras, Hand of Ragnaros", 0, 80)]);
+    const items = gildedRose.updateQuality();
+    expect(items[0].sellIn).toBe(0);
+  });
+
 });
