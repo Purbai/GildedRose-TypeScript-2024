@@ -17,7 +17,7 @@ export class GildedRose {
     this.items = items;
   }
 
-  isNormalItem(item) {
+  isNormalItem(item: Item): boolean {
     return (
       item.name != 'Aged Brie' 
       && item.name != 'Backstage passes to a TAFKAL80ETC concert' 
@@ -27,7 +27,7 @@ export class GildedRose {
     )
   }
 
-  isBrie(item) {
+  isBrie(item: Item): boolean {
     return (
       item.name == 'Aged Brie'
       && item.quality >= 0
@@ -35,7 +35,7 @@ export class GildedRose {
     )
   }
 
-  isBackstagePass(item) {
+  isBackstagePass(item: Item) {
     return (
       item.name == 'Backstage passes to a TAFKAL80ETC concert'
       && item.quality >= 0
@@ -43,14 +43,14 @@ export class GildedRose {
     )
   }
 
-  isSulfuras(item) {
+  isSulfuras(item: Item) {
     return (
       item.name == 'Sulfuras, Hand of Ragnaros'
       && item.quality == 80
     )
   }
 
-  updateQuality(item, amount) {
+  updateQuality(item: Item, amount: number) {
     if (item.quality + amount <= 50) {
       item.quality += amount;
     } else {
@@ -58,23 +58,19 @@ export class GildedRose {
     }
   }
 
-  updateSellIn(item) {
+  updateSellIn(item: Item) {
     item.sellIn -= 1
   }
 
-  updateItem() {
+  updateItem(): Array<Item> {
     for (let i = 0; i < this.items.length; i++) {
 
-      const item = this.items[i];
-
-      // update sell by date every day for all items except Sulfuras
-      if (!this.isSulfuras(item)) {
-        this.updateSellIn(item)
-      }
+      const item: Item = this.items[i];
 
       // update quality for normal items
       if (this.isNormalItem(item)) {
         this.updateQuality(item, -1)
+        this.updateSellIn(item)
         if (item.sellIn < 0) {
           this.updateQuality(item, -1)
         }
@@ -83,6 +79,7 @@ export class GildedRose {
       // update quality for Brie
       if (this.isBrie(item)) {
         this.updateQuality(item, +1)
+        this.updateSellIn(item)
         if (item.sellIn < 0) {
           this.updateQuality(item, +1)
         }
@@ -90,9 +87,6 @@ export class GildedRose {
       
       // update quality for Backstage Passes
       if (this.isBackstagePass(item)) {
-        if (item.sellIn < 0) {
-          this.updateQuality(item, (-1 * item.quality))
-        }
         if (item.sellIn > 10) {
           this.updateQuality(item, +1)
         }
@@ -102,9 +96,14 @@ export class GildedRose {
         if (item.sellIn >= 0 && item.sellIn < 6) {
           this.updateQuality(item, +3)
         }
+        
+        this.updateSellIn(item)
+
+        if (item.sellIn < 0) {
+          this.updateQuality(item, (-1 * item.quality))
+        }
       } 
     }
-  
     return this.items;
   }
 }
